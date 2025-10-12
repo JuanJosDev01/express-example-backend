@@ -35,7 +35,7 @@ router.get("/", async (req, res) => {
 
 // Rutas protegidas (requieren autenticación)
 // Ruta para crear un nuevo hongo (solo admins y editores)
-router.post('/', authenticateToken, requireRole(['admin', 'editor']), upload.any(), async (req, res) => {
+router.post('/', authenticateToken, upload.any(), async (req, res) => {
   try {
     const hongo = req.body;
     // Si se subió una imagen, leer el buffer
@@ -51,7 +51,7 @@ router.post('/', authenticateToken, requireRole(['admin', 'editor']), upload.any
 });
 
 // Ruta para actualizar un hongo existente (solo admins y editores)
-router.put('/:id', authenticateToken, requireRole(['admin', 'editor']), upload.any(), async (req, res) => {
+router.put('/:id', authenticateToken, upload.any(), async (req, res) => {
   try {
     const { id } = req.params;
     const hongo = req.body;

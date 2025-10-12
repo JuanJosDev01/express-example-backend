@@ -15,7 +15,6 @@ export const getHongoById = async (id) => {
 }
 
 export const createHongo = async (hongo) => {
-  console.log(hongo);
   // Validar campos requeridos según la tabla
   if (!hongo.nombre_es || !hongo.comestible || !hongo.tipo) {
     throw new Error("nombre_es, comestible y tipo son requeridos");

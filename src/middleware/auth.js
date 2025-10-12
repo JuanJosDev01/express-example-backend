@@ -2,7 +2,6 @@ import jwt from 'jsonwebtoken';
 import { query } from '../db/index.js';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'micodat_secret_key_2024';
-
 export const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1]; // Bearer TOKEN

@@ -25,7 +25,7 @@ export const create = async (hongo) => {
     ritualidad,
     significado_local,
     comestible,
-    imagen,
+    imagen = null,
     tipo
   } = hongo;
   const sql = `INSERT INTO hongos (
