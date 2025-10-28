@@ -9,6 +9,5 @@
       }
     }
   ],
-  "buildCommand": "npm install",
-  "startCommand": "node src/index.js"
+  "buildCommand": "npm install"
 }
