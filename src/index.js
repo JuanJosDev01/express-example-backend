@@ -13,14 +13,14 @@ connect();
 app.use(express.json());
 app.use(cors('*'));
 
+app.get("/", (req, res) => {
+  res.send("Hello World");
+});
 // Routes
 app.use("/auth", authRouter);
 app.use("/admin", adminRouter);
 app.use("/hongos", hongosRouter);
 app.use("/imagenes", imagenesRouter);
 
-app.get("/", (req, res) => {
-  res.send("Hello World");
-});
 
 export default app;
