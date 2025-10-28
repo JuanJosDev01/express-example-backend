@@ -8,7 +8,7 @@ import cors from "cors";
 import { connect } from "./db/index.js";
 
 const app = express();
-
+connect();
 // Middleware
 app.use(express.json());
 app.use(cors('*'));
@@ -18,5 +18,9 @@ app.use("/auth", authRouter);
 app.use("/admin", adminRouter);
 app.use("/hongos", hongosRouter);
 app.use("/imagenes", imagenesRouter);
+
+app.get("/", (req, res) => {
+  res.send("Hello World");
+});
 
 export default app;
