@@ -1,13 +1,9 @@
 import { createHongo, updateHongo, deleteHongo } from "../controllers/hongos.js";
 import { Router } from "express";
-import multer from "multer";
-import fs from "fs";
-import path from "path";
 import { getHongoById, getHongos } from "../controllers/hongos.js";
 import { authenticateToken, requireRole } from "../middleware/auth.js";
 
 const router = Router();
-const upload = multer({ dest: "uploads/" });
 
 // Rutas públicas (no requieren autenticación)
 // Routa para obtener un hongo por ID
@@ -35,13 +31,9 @@ router.get("/", async (req, res) => {
 
 // Rutas protegidas (requieren autenticación)
 // Ruta para crear un nuevo hongo (solo admins y editores)
-router.post('/', authenticateToken, upload.any(), async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
   try {
     const hongo = req.body;
-    // Si se subió una imagen, leer el buffer
-    if (req.files && req.files.length > 0) {
-      hongo.imagen = fs.readFileSync(path.resolve(req.files[0].path));
-    }
     const result = await createHongo(hongo);
     res.status(201).json(result);
   } catch (err) {
@@ -51,15 +43,10 @@ router.post('/', authenticateToken, upload.any(), async (req, res) => {
 });
 
 // Ruta para actualizar un hongo existente (solo admins y editores)
-router.put('/:id', authenticateToken, upload.any(), async (req, res) => {
+router.put('/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     const hongo = req.body;
-    
-    // Si se subió una imagen, leer el buffer
-    if (req.files && req.files.length > 0) {
-      hongo.imagen = fs.readFileSync(path.resolve(req.files[0].path));
-    }
     
     // Usar el ID del usuario autenticado
     const id_usuario = req.user.id_usuario;
