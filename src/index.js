@@ -10,7 +10,10 @@ connect();
 const app = express();
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: "https://express-example-backend-dbn06al4v-juanjosdev01s-projects.vercel.app",
+  methods: ["GET", "POST", "PUT", "DELETE"],
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
