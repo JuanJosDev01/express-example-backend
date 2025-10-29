@@ -11,7 +11,7 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: "https://express-example-backend-dbn06al4v-juanjosdev01s-projects.vercel.app",
+  origin: "https://vite-example-app-blgv.vercel.app",
   methods: ["GET", "POST", "PUT", "DELETE"],
 }));
 app.use(express.json());
