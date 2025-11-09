@@ -4,30 +4,30 @@ import { query } from "../db/index.js";
  * Obtener todas las imágenes de un hongo específico
  */
 export const findByHongoId = async (id_hongo) => {
-  const sql = "SELECT id, id_hongo FROM hongos_imagenes WHERE id_hongo = ?";
+  const sql = "SELECT id, id_hongo, url_imagen, fecha_creacion FROM hongos_imagenes WHERE id_hongo = ?";
   const params = [id_hongo];
-  const results = await query(sql, params);
+  const results = (await query(sql, params)).rows;
   return results;
 };
 
 /**
- * Obtener una imagen específica por su ID (incluyendo el BLOB)
+ * Obtener una imagen específica por su ID
  */
 export const findById = async (id) => {
-  const sql = "SELECT * FROM hongos_imagenes WHERE id = ?";
+  const sql = "SELECT id, id_hongo, url_imagen, fecha_creacion FROM hongos_imagenes WHERE id = ?";
   const params = [id];
-  const results = await query(sql, params);
+  const results = (await query(sql, params)).rows;
   return results[0];
 };
 
 /**
- * Crear una nueva imagen para un hongo
+ * Crear una nueva imagen para un hongo con URL de R2
  */
-export const create = async (id_hongo, imagenBuffer) => {
-  const sql = `INSERT INTO hongos_imagenes (id_hongo, imagen) VALUES (?, ?)`;
-  const params = [id_hongo, imagenBuffer];
-  const result = await query(sql, params);
-  return result.insertId;
+export const create = async (id_hongo, urlImagen) => {
+  const sql = `INSERT INTO hongos_imagenes (id_hongo, url_imagen) VALUES (?, ?)`;
+  const params = [id_hongo, urlImagen];
+  const result = (await query(sql, params)).lastInsertRowid;
+  return result;
 };
 
 /**
@@ -36,8 +36,8 @@ export const create = async (id_hongo, imagenBuffer) => {
 export const remove = async (id) => {
   const sql = "DELETE FROM hongos_imagenes WHERE id = ?";
   const params = [id];
-  const result = await query(sql, params);
-  return result.affectedRows > 0;
+  const result = (await query(sql, params)).rowsAffected > 0;
+  return result;
 };
 
 /**
@@ -46,8 +46,8 @@ export const remove = async (id) => {
 export const removeByHongoId = async (id_hongo) => {
   const sql = "DELETE FROM hongos_imagenes WHERE id_hongo = ?";
   const params = [id_hongo];
-  const result = await query(sql, params);
-  return result.affectedRows;
+  const result = (await query(sql, params)).rowsAffected;
+  return result;
 };
 
 /**
@@ -56,7 +56,7 @@ export const removeByHongoId = async (id_hongo) => {
 export const countByHongoId = async (id_hongo) => {
   const sql = "SELECT COUNT(*) as total FROM hongos_imagenes WHERE id_hongo = ?";
   const params = [id_hongo];
-  const results = await query(sql, params);
-  return results[0].total;
+  const results = (await query(sql, params)).rows;
+  return results.rows[0].total;
 };
 

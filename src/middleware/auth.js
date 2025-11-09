@@ -15,7 +15,7 @@ export const authenticateToken = async (req, res, next) => {
     
     // Verificar que el usuario aún existe en la base de datos
     const sql = 'SELECT id_usuario, nombre, email, rol FROM usuarios WHERE id_usuario = ?';
-    const user = await query(sql, [decoded.id_usuario]);
+    const user = (await query(sql, [decoded.id_usuario])).rows;
     
     if (!user || user.length === 0) {
       return res.status(401).json({ error: 'Usuario no encontrado' });

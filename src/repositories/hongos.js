@@ -1,13 +1,13 @@
 import { query } from "../db/index.js";
 export const findAll = async () => {
-  const hongos = await query("SELECT * FROM hongos");
+  const hongos = (await query("SELECT * FROM hongos")).rows;
   return hongos;
 };
 
 export const findById = async (id) => {
   const sql = "SELECT * FROM hongos WHERE id_hongo = ?";
   const params = [id];
-  const results = await query(sql, params);
+  const results = (await query(sql, params)).rows;
   return results[0]; // Suponiendo que el ID es único y solo devuelve un registro
 };
 
@@ -25,7 +25,6 @@ export const create = async (hongo) => {
     ritualidad,
     significado_local,
     comestible,
-    imagen = null,
     tipo
   } = hongo;
   const sql = `INSERT INTO hongos (
@@ -40,9 +39,8 @@ export const create = async (hongo) => {
     ritualidad,
     significado_local,
     comestible,
-    imagen,
     tipo
-  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+  ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
   const params = [
     nombre_es,
     nombre_nah,
@@ -55,11 +53,10 @@ export const create = async (hongo) => {
     ritualidad,
     significado_local,
     comestible,
-    imagen,
     tipo
   ];
-  const result = await query(sql, params);
-  return result.insertId;
+  const result = (await query(sql, params)).lastInsertRowid;
+  return result;
 };
 
 export const update = async (id, hongo) => {
@@ -75,7 +72,6 @@ export const update = async (id, hongo) => {
     ritualidad,
     significado_local,
     comestible,
-    imagen,
     tipo
   } = hongo;
   
@@ -127,10 +123,6 @@ export const update = async (id, hongo) => {
     fields.push('comestible = ?');
     params.push(comestible);
   }
-  if (imagen !== undefined) {
-    fields.push('imagen = ?');
-    params.push(imagen);
-  }
   if (tipo !== undefined) {
     fields.push('tipo = ?');
     params.push(tipo);
@@ -147,19 +139,19 @@ export const update = async (id, hongo) => {
   params.push(id);
   
   const result = await query(sql, params);
-  return result.affectedRows > 0;
+  return result.rowsAffected > 0;
 };
 
 export const remove = async (id) => {
   const sql = "DELETE FROM hongos WHERE id_hongo = ?";
   const params = [id];
   const result = await query(sql, params);
-  return result.affectedRows > 0;
+  return result.rowsAffected > 0;
 };
 
 export const addHistorial = async (id_hongo, id_usuario, accion, descripcion) => {
   const sql = `INSERT INTO historial (id_hongo, id_usuario, accion, descripcion) VALUES (?, ?, ?, ?)`;
   const params = [id_hongo, id_usuario, accion, descripcion];
-  const result = await query(sql, params);
-  return result.insertId;
+  const result = (await query(sql, params)).lastInsertRowid;
+  return result;
 };

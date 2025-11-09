@@ -5,14 +5,17 @@ const pool = createClient({
   authToken: process.env.TURSO_AUTH_TOKEN,
 });
 
+// Antes de tus rutas:
+BigInt.prototype.toJSON = function () { return this.toString(); };
+
+
 
 const query = async (sql, params = []) => {
   const result = await pool.execute({
     sql,
     args: params,
   });
-
-  return result.rows;
+  return result;
 };
 
 export { query };

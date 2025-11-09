@@ -179,7 +179,7 @@ router.get('/stats', async (req, res) => {
         SUM(CASE WHEN rol = 'editor' THEN 1 ELSE 0 END) as total_editors
       FROM usuarios
     `;
-    const stats = await query(statsSql);
+    const stats = (await query(statsSql)).rows;
     
     res.json({
       success: true,

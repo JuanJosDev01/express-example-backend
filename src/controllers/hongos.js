@@ -1,4 +1,3 @@
-import { query } from "../db/index.js";
 import { getHongos as getHongosService, getHongoById as getHongoByIdService, createHongo as createHongoService, updateHongo as updateHongoService, deleteHongo as deleteHongoService } from "../services/hongos.js";
 
 export const getHongos = async () => {
@@ -21,6 +20,7 @@ export const createHongo = async (hongo) => {
   }
 
   const id = await createHongoService(hongo);
+  console.log(id);
   return { id };
 };
 

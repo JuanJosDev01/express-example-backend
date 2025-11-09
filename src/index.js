@@ -25,4 +25,7 @@ app.use("/admin", adminRouter);
 app.use("/hongos", hongosRouter);
 app.use("/imagenes", imagenesRouter);
 
+app.listen(3000, () => {
+  console.log("Server is running on port 3000");
+});
 export default app;

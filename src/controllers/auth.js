@@ -9,12 +9,11 @@ export const login = async (email, password) => {
 
   // Buscar usuario por email
   const sql = 'SELECT id_usuario, nombre, email, password, rol FROM usuarios WHERE email = ?';
-  const users = await query(sql, [email]);
+  const users = (await query(sql, [email])).rows;
 
   if (!users || users.length === 0) {
     throw new Error('Credenciales inválidas');
   }
-
   const user = users[0];
 
   // Verificar contraseña
@@ -44,7 +43,7 @@ export const register = async (userData) => {
 
   // Verificar si el email ya existe
   const existingUserSql = 'SELECT id_usuario FROM usuarios WHERE email = ?';
-  const existingUsers = await query(existingUserSql, [email]);
+  const existingUsers = (await query(existingUserSql, [email])).rows;
 
   if (existingUsers && existingUsers.length > 0) {
     throw new Error('El email ya está registrado');
@@ -59,11 +58,11 @@ export const register = async (userData) => {
     INSERT INTO usuarios (nombre, email, password, rol) 
     VALUES (?, ?, ?, ?)
   `;
-  const result = await query(insertSql, [nombre, email, hashedPassword, rol]);
+  const result = (await query(insertSql, [nombre, email, hashedPassword, rol])).lastInsertRowid;
 
   // Obtener el usuario creado
   const newUserSql = 'SELECT id_usuario, nombre, email, rol FROM usuarios WHERE id_usuario = ?';
-  const newUser = await query(newUserSql, [result.insertId]);
+  const newUser = (await query(newUserSql, [result])).rows;
 
   // Generar token
   const token = generateToken(newUser[0]);
@@ -76,7 +75,7 @@ export const register = async (userData) => {
 
 export const getProfile = async (userId) => {
   const sql = 'SELECT id_usuario, nombre, email, rol, fecha_creacion FROM usuarios WHERE id_usuario = ?';
-  const users = await query(sql, [userId]);
+  const users = (await query(sql, [userId])).rows;
 
   if (!users || users.length === 0) {
     throw new Error('Usuario no encontrado');
@@ -95,7 +94,7 @@ export const updateProfile = async (userId, updateData) => {
   // Si se está actualizando el email, verificar que no exista
   if (email) {
     const existingUserSql = 'SELECT id_usuario FROM usuarios WHERE email = ? AND id_usuario != ?';
-    const existingUsers = await query(existingUserSql, [email, userId]);
+    const existingUsers = (await query(existingUserSql, [email, userId])).rows;
 
     if (existingUsers && existingUsers.length > 0) {
       throw new Error('El email ya está en uso por otro usuario');
@@ -120,7 +119,7 @@ export const updateProfile = async (userId, updateData) => {
 
   const result = await query(sql, params);
 
-  if (result.affectedRows === 0) {
+  if (result.rowsAffected === 0) {
     throw new Error('Usuario no encontrado');
   }
 

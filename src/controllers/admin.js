@@ -4,7 +4,7 @@ import { query } from '../db/index.js';
 export const getAllUsers = async () => {
   const sql = 'SELECT id_usuario, nombre, email, rol, fecha_creacion FROM usuarios ORDER BY fecha_creacion DESC';
   const users = await query(sql);
-  return users;
+  return users.rows;
 };
 
 export const getUserById = async (userId) => {
@@ -15,7 +15,7 @@ export const getUserById = async (userId) => {
     throw new Error('Usuario no encontrado');
   }
   
-  return users[0];
+  return users.rows[0];
 };
 
 export const createUser = async (userData) => {
@@ -27,12 +27,7 @@ export const createUser = async (userData) => {
 
   // Verificar si el email ya existe
   const existingUserSql = 'SELECT id_usuario FROM usuarios WHERE email = ?';
-  const existingUsers = await query(existingUserSql, [email]);
-
-  if (existingUsers && existingUsers.length > 0) {
-    throw new Error('El email ya está registrado');
-  }
-
+  const existingUsers = await query(existingUserSql, [email]).rows;
   // Validar rol
   if (!['admin', 'editor'].includes(rol)) {
     throw new Error('Rol inválido. Debe ser admin o editor');
@@ -47,10 +42,10 @@ export const createUser = async (userData) => {
     INSERT INTO usuarios (nombre, email, password, rol) 
     VALUES (?, ?, ?, ?)
   `;
-  const result = await query(insertSql, [nombre, email, hashedPassword, rol]);
+  const result = await query(insertSql, [nombre, email, hashedPassword, rol]).lastInsertRowid;
 
   // Retornar usuario creado sin contraseña
-  return await getUserById(result.insertId);
+  return await getUserById(result);
 };
 
 export const updateUser = async (userId, updateData) => {
@@ -66,7 +61,7 @@ export const updateUser = async (userId, updateData) => {
   // Si se está actualizando el email, verificar que no exista
   if (email) {
     const existingUserSql = 'SELECT id_usuario FROM usuarios WHERE email = ? AND id_usuario != ?';
-    const existingUsers = await query(existingUserSql, [email, userId]);
+    const existingUsers = (await query(existingUserSql, [email, userId])).rows;
 
     if (existingUsers && existingUsers.length > 0) {
       throw new Error('El email ya está en uso por otro usuario');
@@ -104,9 +99,9 @@ export const updateUser = async (userId, updateData) => {
   const sql = `UPDATE usuarios SET ${fields.join(', ')} WHERE id_usuario = ?`;
   params.push(userId);
 
-  const result = await query(sql, params);
+  const result = (await query(sql, params));
 
-  if (result.affectedRows === 0) {
+  if (result.rowsAffected === 0) {
     throw new Error('Usuario no encontrado');
   }
 
@@ -121,17 +116,17 @@ export const deleteUser = async (userId) => {
   // No permitir eliminar el último admin
   if (user.rol === 'admin') {
     const adminCountSql = 'SELECT COUNT(*) as count FROM usuarios WHERE rol = "admin"';
-    const adminCount = await query(adminCountSql);
+    const adminCount = (await query(adminCountSql)).rows;
     
-    if (adminCount[0].count <= 1) {
+    if (adminCount.rows[0].count <= 1) {
       throw new Error('No se puede eliminar el último administrador');
     }
   }
 
   const sql = 'DELETE FROM usuarios WHERE id_usuario = ?';
-  const result = await query(sql, [userId]);
+  const result = (await query(sql, [userId]));
 
-  if (result.affectedRows === 0) {
+  if (result.rowsAffected === 0) {
     throw new Error('Usuario no encontrado');
   }
 
@@ -149,20 +144,20 @@ export const changeUserRole = async (userId, newRole) => {
   // No permitir cambiar el rol del último admin
   if (user.rol === 'admin' && newRole === 'editor') {
     const adminCountSql = 'SELECT COUNT(*) as count FROM usuarios WHERE rol = "admin"';
-    const adminCount = await query(adminCountSql);
+    const adminCount = (await query(adminCountSql)).rows;
     
-    if (adminCount[0].count <= 1) {
+    if (adminCount.rows[0].count <= 1) {
       throw new Error('No se puede cambiar el rol del último administrador');
     }
   }
 
   const sql = 'UPDATE usuarios SET rol = ? WHERE id_usuario = ?';
-  const result = await query(sql, [newRole, userId]);
+  const result = (await query(sql, [newRole, userId])).rowsAffected;
 
-  if (result.affectedRows === 0) {
+  if (result === 0) {
     throw new Error('Usuario no encontrado');
   }
 
-  return await getUserById(userId);
+  return result;
 };
 

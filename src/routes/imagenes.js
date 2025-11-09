@@ -93,16 +93,16 @@ router.delete('/hongos/:id_hongo', async (req, res) => {
 
 /**
  * GET /imagenes/:id
- * Obtener una imagen específica por su ID (devuelve la imagen como archivo)
+ * Obtener información de una imagen específica por su ID (devuelve metadata y URL de R2)
+ * Para ver la imagen directamente, el frontend debe usar la URL de R2 incluida en la respuesta
  */
 router.get('/:id', async (req, res) => {
   try {
     const { id } = req.params;
     const imagen = await getImagenById(id);
     
-    // Enviar la imagen como respuesta
-    res.set('Content-Type', 'image/jpeg'); // Puedes ajustar esto según el tipo de imagen
-    res.send(imagen.imagen);
+    // Devolver la información de la imagen incluyendo su URL de R2
+    res.json(imagen);
   } catch (error) {
     console.error('Error al obtener imagen:', error);
     res.status(404).json({ error: error.message });

@@ -21,7 +21,7 @@ export const getImagenesByHongoId = async (id_hongo) => {
 };
 
 /**
- * Obtener una imagen específica por su ID (devuelve el buffer de la imagen)
+ * Obtener una imagen específica por su ID (devuelve la URL de R2)
  */
 export const getImagenById = async (id) => {
   if (!id) {
@@ -44,16 +44,19 @@ export const uploadImagenes = async (id_hongo, files) => {
     throw new Error("No se han proporcionado imágenes");
   }
   
-  // Convertir los archivos a buffers
-  const imagenesBuffers = files.map(file => file.buffer);
+  // Preparar los datos de las imágenes con buffer y mimeType
+  const imagenesData = files.map(file => ({
+    buffer: file.buffer,
+    mimeType: file.mimetype
+  }));
   
-  // Crear las imágenes
-  const ids = await createMultipleImagenesService(id_hongo, imagenesBuffers);
+  // Crear las imágenes (subir a R2 y guardar URLs en DB)
+  const results = await createMultipleImagenesService(id_hongo, imagenesData);
   
   return {
-    message: `${ids.length} imagen(es) subida(s) exitosamente`,
-    ids,
-    count: ids.length
+    message: `${results.length} imagen(es) subida(s) exitosamente`,
+    imagenes: results,
+    count: results.length
   };
 };
 
