@@ -5,8 +5,7 @@ import imagenesRouter from "./routes/imagenes.js";
 import authRouter from "./routes/auth.js";
 import adminRouter from "./routes/admin.js";
 import cors from "cors";
-import { connect } from "./db/index.js";
-connect();
+import './db/index.js';
 const app = express();
 
 // Middleware
