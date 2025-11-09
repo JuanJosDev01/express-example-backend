@@ -1,7 +1,7 @@
 import { createClient } from "@libsql/client";
 
 const pool = createClient({
-  url: "libsql://micodat-bucha789.aws-us-east-2.turso.io",
+  url: process.env.TURSO_URL,
   authToken: process.env.TURSO_AUTH_TOKEN,
 });
 

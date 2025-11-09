@@ -5,13 +5,14 @@
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "dev": "node src/index.js"
+    "dev": "nodemon src/index.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@libsql/client": "^0.15.15",
     "aws-sdk": "^2.1692.0",
     "axios": "^1.8.4",
     "bcryptjs": "^3.0.2",
